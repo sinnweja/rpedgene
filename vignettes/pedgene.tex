@@ -1,0 +1,354 @@
+%\VignetteIndexEntry{pedgene manual}
+%\VignetteDepends{pedgene}
+%\VignetteKeywords{pedigree, variant, kinship}
+%\VignettePackage{pedgene}
+
+%**************************************************************************
+%
+% # $Id:$
+% $Revision:  $
+% $Author: Jason Sinnwell$
+% $Date:  $
+
+\documentclass[letterpaper]{article}
+
+\usepackage{Sweave}
+\textwidth 7.5in
+\textheight 8.9in
+\topmargin  0.1in
+\headheight 0.0in
+\headsep 0.0in
+\oddsidemargin  -30pt
+\evensidemargin  -30pt
+
+
+\title{pedgene package vignette \\ 
+        Version 2.0}
+\author{Jason Sinnwell and Daniel Schaid}
+\begin{document}
+\maketitle
+
+\section{Introduction}
+This document is a brief tutorial for the pedgene package, which implements methods described
+in Schaid et al., 2013~\cite{Schaid}, entitled {\sl ``Multiple Genetic Variant Association 
+  Testing by Collapsing and Kernel Methods With Pedigree or Population Structured Data''}.   
+
+We begin by showing the data structure and requirements of the input data, and continue with 
+examples on running the method.  If the pedgene package is not loaded, load it now.
+
+\begin{Schunk}
+\begin{Sinput}
+R> library(pedgene)
+\end{Sinput}
+\end{Schunk}
+
+
+\section{Example Data}
+Three example data frames are provided within the pedgene package: 
+\begin{itemize}
+\item{\em example.ped: }{ data.frame with columns ped, person, father, mother, sex, and trait;
+        for 3 families of 10 subjects each, and 9 unrelated subjects}
+\item{\em example.geno:}{ data.frame with ped and person to match lines to example.ped, and 
+  minor allele count for 20 simulated variant positions}
+\item{\em example.map: }{data frame with columns for gene name and chromosome matching 
+  columns in example.geno}
+\end{itemize}
+
+\noindent Load the example data and look at some of the values.
+
+\begin{Schunk}
+\begin{Sinput}
+R> data(example.ped)
+R> example.ped[c(1:10,31:39),]
+\end{Sinput}
+\begin{Soutput}
+     ped person father mother sex trait
+1      1      1      0      0   1    NA
+2      1      2      0      0   2    NA
+3      1      3      0      0   2    NA
+4      1      4      1      2   1    NA
+5      1      5      1      2   2    NA
+6      1      6      0      0   1    NA
+7      1      7      4      3   2     1
+8      1      8      4      3   1     1
+9      1      9      6      5   2    NA
+10     1     10      6      5   1     1
+1942 592      1      0      0   1     0
+1943 593      1      0      0   1     0
+1944 594      1      0      0   1     0
+1945 595      1      0      0   1     0
+1946 596      1      0      0   1     0
+1947 597      1      0      0   1     0
+1948 598      1      0      0   1     0
+1949 599      1      0      0   1     0
+1950 600      1      0      0   1     0
+\end{Soutput}
+\begin{Sinput}
+R> data(example.geno)
+R> dim(example.geno)
+\end{Sinput}
+\begin{Soutput}
+[1] 18 22
+\end{Soutput}
+\begin{Sinput}
+R> example.geno[,c(1:2,10:14)]
+\end{Sinput}
+\begin{Soutput}
+   ped person AA.8 AA.9 AA.10 AX.1 AX.2
+7    1      7    0    0     0    0    0
+8    1      8    0    0     0    0    0
+10   1     10    0    0     0    0    0
+17   2      7    0    0     0    0    0
+18   2      8    0    0     0    0    1
+20   2     10    0    0     0    0    0
+27   3      7    0    0     0    0    0
+28   3      8    0    0     0    0    0
+30   3     10    0    0     0    0    0
+31 592      1    0    0     0    0    0
+32 593      1    0    0     0    0    0
+33 594      1    0    0     0    0    0
+34 595      1    0    0     0    0    0
+35 596      1    0    0     0    0    0
+36 597      1    1    0     0    0    0
+37 598      1    0    0     0    0    1
+38 599      1    0    0     0    0    0
+39 600      1    1    0     1    0    0
+\end{Soutput}
+\begin{Sinput}
+R> data(example.map)
+R> example.map
+\end{Sinput}
+\begin{Soutput}
+   chrom gene
+1      1   AA
+2      1   AA
+3      1   AA
+4      1   AA
+5      1   AA
+6      1   AA
+7      1   AA
+8      1   AA
+9      1   AA
+10     1   AA
+11     X   AX
+12     X   AX
+13     X   AX
+14     X   AX
+15     X   AX
+16     X   AX
+17     X   AX
+18     X   AX
+19     X   AX
+20     X   AX
+\end{Soutput}
+\end{Schunk}
+
+Note the following features:
+\begin{itemize}
+\item The pedigree data has more subjects than subjects that have genotypes, to keep
+  pedigrees connected.
+\item Subjects with genotype data are matched to the pedigree data by the ped 
+  and person IDs in both data sets
+\item The number of non-id columns in the genotype data frame must match the number 
+  of rows in the map data frame
+\item The two genes provided are actually the same simulated data, but we show they are 
+  analyzed differently for chromosome 1 versus chromosome X
+\end{itemize}
+
+\section{Case-Control}
+
+\subsection*{No covariate adjustment}
+
+We perform a typical use of pedgene with default settings on the case-control
+status provided in the example data.
+
+\begin{Schunk}
+\begin{Sinput}
+R> pg.cc <- pedgene(ped=example.ped, geno=example.geno, map=example.map)
+R> print(pg.cc)
+\end{Sinput}
+\begin{Soutput}
+  gene chrom n.variant n.noninform stat.kernel pval.kernel stat.burden pval.burden
+1   AA     1         7           3    144.8264   0.3498380   -2.047518  0.04060727
+2   AX     X         7           3    104.9025   0.2320272   -2.025992  0.04276560
+\end{Soutput}
+\end{Schunk}
+
+
+\noindent The results show the output for the two genes in a table, 
+containing gene, chromosome, the number of variants used, the non-informative variants 
+that were removed, the kernel statistic and p-value, and the burden 
+statistic and p-value.  The kernel p-value is calculated using Kounen's saddlepoint 
+method~\cite{Kounen}, and the burden p-value is based on the normal distribution.
+
+\subsection*{With covariate adjustment}
+
+The pedgene function can work with case-control data and an adjusted trait using 
+a covariate.  The data contains the sex variable, so we use it in a logistic regression to get 
+adjusted fitted values for the trait, which we add to example.ped at a new column named
+{\sl trait.adjusted}, which pedgene recognizes and uses in calculating residuals.
+
+\begin{Schunk}
+\begin{Sinput}
+R> binfit <-  glm(trait ~ (sex-1),data=example.ped, family="binomial")
+R> example.ped$trait.adjusted[!is.na(example.ped$trait)] <- fitted.values(binfit) 
+R> example.ped[1:10,]
+\end{Sinput}
+\begin{Soutput}
+   ped person father mother sex trait trait.adjusted
+1    1      1      0      0   1    NA             NA
+2    1      2      0      0   2    NA             NA
+3    1      3      0      0   2    NA             NA
+4    1      4      1      2   1    NA             NA
+5    1      5      1      2   2    NA             NA
+6    1      6      0      0   1    NA             NA
+7    1      7      4      3   2     1      0.6103459
+8    1      8      4      3   1     1      0.5558616
+9    1      9      6      5   2    NA             NA
+10   1     10      6      5   1     1      0.5558616
+\end{Soutput}
+\begin{Sinput}
+R> pg.cc.adj <- pedgene(ped=example.ped, geno=example.geno, map=example.map)
+R> summary(pg.cc.adj, digits=4)
+\end{Sinput}
+\begin{Soutput}
+Summary for pedgene object: 
+
+Call:
+pedgene(ped = example.ped, geno = example.geno, map = example.map)
+
+
+  gene chrom n.variant n.noninform stat.kernel pval.kernel stat.burden pval.burden
+1   AA     1         7           3       181.0      0.2121      -2.487     0.01288
+2   AX     X         7           3       130.1      0.1648      -2.353     0.01863
+\end{Soutput}
+\end{Schunk}
+
+\noindent The results are now shown from the summary method, which
+adds the call to the pedgene function.  The results are different because we now 
+input the fitted values from the logistic regression, which of course can be a more 
+complex model than what we use here.
+
+\section{Continuous Trait}
+
+\subsection*{No covariate adjustment}
+
+The pedgene method works similarly for continous traits. We first create a different
+version of the pedigree data to have a continous trait, which we simulate.  We simulate 
+complete trait data for all subjects, but pedgene will only use the subjects for which we 
+have genotype data.
+
+\begin{Schunk}
+\begin{Sinput}
+R> set.seed(10)
+R> cont.ped <- example.ped[,c("ped", "person", "father", "mother", "sex")]
+R> beta.sex <- 0.3
+R> cont.ped$trait <- (cont.ped$sex-1)*beta.sex + rnorm(nrow(cont.ped))
+R> pg.cont <- pedgene(ped = cont.ped, geno = example.geno, map = example.map)
+R> print(pg.cont, digits=4)
+\end{Sinput}
+\begin{Soutput}
+  gene chrom n.variant n.noninform stat.kernel pval.kernel stat.burden pval.burden
+1   AA     1         7           3      107.56      0.8015     -0.6332      0.5266
+2   AX     X         7           3       49.43      0.7937     -0.4345      0.6639
+\end{Soutput}
+\end{Schunk}
+
+\noindent The results are now non-significant because we simulated
+a trait that is slightly influenced by sex, but not the genotype data.
+
+\subsection*{With covariate adjustment}
+
+Now we add the {\sl trait.adjusted} column to the cont.ped data set and run pedgene
+again. 
+
+\begin{Schunk}
+\begin{Sinput}
+R> gausfit <-  glm(trait ~ (sex-1),data=cont.ped, family="gaussian")
+R> cont.ped$trait.adjusted <- fitted.values(gausfit) 
+R> cont.ped[1:10,]
+\end{Sinput}
+\begin{Soutput}
+   ped person father mother sex       trait trait.adjusted
+1    1      1      0      0   1  0.01874617     -0.1718622
+2    1      2      0      0   2  0.11574746     -0.3437245
+3    1      3      0      0   2 -1.07133055     -0.3437245
+4    1      4      1      2   1 -0.59916772     -0.1718622
+5    1      5      1      2   2  0.59454513     -0.3437245
+6    1      6      0      0   1  0.38979430     -0.1718622
+7    1      7      4      3   2 -0.90807618     -0.3437245
+8    1      8      4      3   1 -0.36367602     -0.1718622
+9    1      9      6      5   2 -1.32667268     -0.3437245
+10   1     10      6      5   1 -0.25647839     -0.1718622
+\end{Soutput}
+\begin{Sinput}
+R> pg.cont.adj <- pedgene(ped=cont.ped, geno=example.geno, map=example.map)
+R> summary(pg.cont.adj, digits=5)
+\end{Sinput}
+\begin{Soutput}
+Summary for pedgene object: 
+
+Call:
+pedgene(ped = cont.ped, geno = example.geno, map = example.map)
+
+
+  gene chrom n.variant n.noninform stat.kernel pval.kernel stat.burden pval.burden
+1   AA     1         7           3     143.384     0.71827    -1.08219     0.27917
+2   AX     X         7           3      68.614     0.71167    -0.81039     0.41772
+\end{Soutput}
+\end{Schunk}
+
+\section{Remarks}
+
+\begin{itemize}
+\item The pedgene package is deigned to be rigid in what it expects for pedigree 
+    and genotype data, which puts a little extra burden on the user.  However it 
+    should reduce confusion when running the method.  
+\item One potential run-time bottleneck is a set of pedigree checks performed on all pedigrees.
+    If the pedigrees are clean and you have many subjects, you may wish to skip this step with 
+    the argument checkpeds=FALSE. 
+\item By default, the method uses Madsen-Browning weights~\cite{Madsen}, but it allows user-defined weights 
+    per variant with the weights argument.
+\end{itemize}
+
+
+\section{R Session Information}
+\begin{Schunk}
+\begin{Sinput}
+R> toLatex(sessionInfo())
+\end{Sinput}
+\begin{itemize}\raggedright
+  \item R version 3.0.2 (2013-09-25), \verb|x86_64-unknown-linux-gnu|
+  \item Locale: \verb|LC_CTYPE=en_US.UTF-8|, \verb|LC_NUMERIC=C|, \verb|LC_TIME=en_US.UTF-8|, \verb|LC_COLLATE=en_US.UTF-8|, \verb|LC_MONETARY=en_US.UTF-8|, \verb|LC_MESSAGES=en_US.UTF-8|, \verb|LC_PAPER=en_US.UTF-8|, \verb|LC_NAME=C|, \verb|LC_ADDRESS=C|, \verb|LC_TELEPHONE=C|, \verb|LC_MEASUREMENT=en_US.UTF-8|, \verb|LC_IDENTIFICATION=C|
+  \item Base packages: base, datasets, graphics, grDevices, methods, splines, stats,
+    utils
+  \item Other packages: CompQuadForm~1.4, gam~1.09, kinship2~1.5.6, lattice~0.20-23,
+    Matrix~1.0-14, pedgene~2.0, quadprog~1.5-5, rlocal~1.7.4, survey~3.29-4,
+    survival~2.37-7
+  \item Loaded via a namespace (and not attached): grid~3.0.2, tools~3.0.2
+\end{itemize}\end{Schunk}
+
+\begin{thebibliography}{}
+\bibitem{Schaid}
+Schaid DJ, McDonnell SK., Sinnwell JP, Thibodeau SN. (2013)
+{\bf Multiple Genetic Variant Association Testing by Collapsing and Kernel Methods 
+  With Pedigree or Population Structured Data} {\em Genet Epidemiol}, 37(5):409-18.
+
+\bibitem{Kounen}
+Kounen D (1999) {\bf Saddle point approximatinos for distributions of
+quadratic forms in normal variables} {\em Biometrika}, 86:929 -935.
+
+\bibitem{Davies}
+Davies RB (1980) {\bf Algorithm AS 155: The Distribution of a Linear Combination
+of chi-2 Random Variables}  {\em Journal of the Royal Statistical
+Society. Series C (Applied Statistics)}, 29(3):323-33
+ 
+\bibitem{Madsen}
+Madsen BE, Browning SR (2009). 
+{\bf A groupwise association test for rare mutations using a weighted sum statistic} 
+{\em PLoS Genet} 5(2):e1000384.
+
+
+\end{thebibliography}
+   
+\end{document}
