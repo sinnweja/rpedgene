@@ -12,6 +12,7 @@ Depends: R (>= 3.2.0), stats, Matrix, CompQuadForm, survey, kinship2 (>= 1.6.0)
 NeedsCompilation: no
 Packaged: 2015-09-16 13:24:40 UTC; sinnwell
 Author: Schaid Daniel [aut],
-  Jason Sinnwell [aut, cre]
+  Jason Sinnwell [aut, cre],
+  Alessia Visconti [ctb]
 Maintainer: Jason Sinnwell <sinnwell.jason@mayo.edu>
 URL: http://bioinformaticstools.mayo.edu/research/pedgene

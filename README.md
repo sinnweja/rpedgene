@@ -4,11 +4,12 @@
 
 # rpedgene
 
-Gene-level kernel and burden association tests of genetic variants with a trait of interest, allowing for related individuals.
+Gene-level kernel and burden association tests of genetic variants with a trait of interest, allowing for related individuals, including twins.
 
 # Authors
 
 Daniel J. Schaid and Jason P. Sinnwell
+Small contribution by A. Visconti
 
 # Manuscript:
 

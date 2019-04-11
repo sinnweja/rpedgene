@@ -2,17 +2,20 @@
 \alias{example.geno}
 \alias{example.ped}
 \alias{example.map}
+\alias{example.relation}
 \docType{data}
 \title{Example datasets for pedgene }
 \description{
   example.geno: a data frame with minor allele count for subjects (rows)
   at variant positions (columns); example.ped: pedigree and trait data for subjects in
-  example.geno; example.map: gene and chromosome for variant positions in example.geno  
+  example.geno; example.map: gene and chromosome for variant positions in example.geno;  
+  example.relation: special (twin) relationships for individuals in example.ped
 }
 \usage{
 data(example.geno)
 data(example.ped)
 data(example.map)
+data(example.relation)
 }
 \format{
   \code{example.geno} -data frame with minor allele count for 20 variant
@@ -46,6 +49,17 @@ data(example.map)
    \item{\code{chrom }}{chromosome code (1-23,X allowed) where the gene is located}
    \item{\code{gene }}{gene identifier}
  }
+ \code{example.relation } - matrix specifying special relationships between pairs 
+ 	of individuals in the following columns:
+    \itemize{
+      \item{\code{ped }}{pedigree ID, character or numeric}
+      \item{\code{id1 }}{person1 ID, used with ped to match subjects to
+	their row in example.ped}
+      \item{\code{id2 }}{person2 ID, used with ped to match subjects to
+	their row in example.ped}
+      \item{\code{code }}{any of the following: 1=Monozygotic twin, 2=Dizygotic twin, 
+	  		3=Twin of unknown zygosity, and 4=Spouse}
+    }
 }
 \source{
  Simulated data for testing purposes
@@ -54,5 +68,6 @@ data(example.map)
 data(example.geno)
 data(example.ped)
 data(example.map)
+data(example.relation)
 }
 \keyword{datasets}
