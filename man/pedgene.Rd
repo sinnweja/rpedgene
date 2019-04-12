@@ -53,6 +53,17 @@ pedgene(ped, geno, map=NULL, male.dose=2,
     allele). For X-chromosome markers, females are coded 0, 1, 2, and
     males coded 0, 1. Missing genotypes (NA) are allowed.
   }
+  \item{relation}{
+    Optional data.frame/matrix with 4 columns (id, person1, person2, code) specifying 
+	special relationships between pairs of individuals and used by the kinship 
+	function. Codes are : 
+		1=Monozygotic twin, 
+		2=Dizygotic twin, 
+		3=Twin of unknown zygosity, and
+		4=Spouse. 
+	The last is necessary in order to place a marriage with no children into the 
+	plot. See kinship2::pedigree for details.
+  }
   \item{map}{
     Optional data.frame with columns "chrom" and  "gene", one row per
     variant column in geno. The gene name can be any identifier for the
@@ -160,6 +171,7 @@ pedgene(ped, geno, map=NULL, male.dose=2,
 }
 \author{
 Daniel J. Schaid, Jason P. Sinnwell, Mayo Clinic (contact: schaid@mayo.edu).
+Alessia Visconti, King's College London (alessia.visconti@kcl.ac.uk).
 }
 \seealso{
 pedigreeChecks, example.ped

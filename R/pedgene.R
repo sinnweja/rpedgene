@@ -2,9 +2,9 @@
 ## Functions: pedgene 
 ## wrapper for computing retrospective likelihood stat on pedigrees for rare
 ## variants over multiple genes
-## Authors: Jason Sinnwell and Dan Schaid
+## Authors: Jason Sinnwell, Dan Schaid, and Alessia Visconti
 
-pedgene <- function(ped, geno, map=NULL, male.dose=2, checkpeds=TRUE, verbose.return=FALSE,
+pedgene <- function(ped, geno, relation=NULL, map=NULL, male.dose=2, checkpeds=TRUE, verbose.return=FALSE,
                     weights=NULL, weights.beta=c(1,25), weights.mb=FALSE,
                     method="kounen", acc.davies=1e-5) {
 
@@ -179,17 +179,34 @@ pedgene <- function(ped, geno, map=NULL, male.dose=2, checkpeds=TRUE, verbose.re
   ## We rather created it directly from ped  
   ## create kinship matrix, also for X if any genes on X chrom
   ## subset to only those with geno rows
-  kinmat <- Matrix(with(ped, kinship(id=paste(ped,person,sep="-"),
-                      dadid=ifelse(father>0,paste(ped,father,sep="-") , as.character(father)),
-                      momid=ifelse(mother>0, paste(ped,mother,sep="-"), as.character(mother)),
-                      sex=sex, chrtype="autosome")))
+  if (is.null(relation)) {
+	  kinmat <- Matrix(with(ped, kinship(id=paste(ped,person,sep="-"),
+	                      dadid=ifelse(father>0,paste(ped,father,sep="-") , as.character(father)),
+	                      momid=ifelse(mother>0, paste(ped,mother,sep="-"), as.character(mother)),
+	                      sex=sex, chrtype="autosome")))
+  } else {
+	  ## includes information on special relationship, if available
+	  relation <- format.relation(relation)
+	  ped2 <- with(ped, pedigree(id=paste(ped,person,sep="-"), 
+	  						dadid=ifelse(father>0,paste(ped,father,sep="-") , as.character(father)),
+	  						momid=ifelse(mother>0, paste(ped,mother,sep="-"), as.character(mother)),
+	  						sex=sex, missid=0,
+	  						relation=relation))
+				  
+	  kinmat <- Matrix(kinship(ped2, chrtype="autosome"))		 	 
+  }
   kinmat <- kinmat[keepped, keepped]
- 
+	  
   if(any(map$chrom=="X")) {
-    kinmatX <- Matrix(with(ped, kinship(id=paste(ped,person,sep="-"),
-                      dadid=ifelse(father>0,paste(ped,father,sep="-") , as.character(father)),
-                      momid=ifelse(mother>0, paste(ped,mother,sep="-"), as.character(mother)),
-                      sex=sex, chrtype="X")))
+	  if (is.null(relation)) {
+	    kinmatX <- Matrix(with(ped, kinship(id=paste(ped,person,sep="-"),
+	                      dadid=ifelse(father>0,paste(ped,father,sep="-") , as.character(father)),
+	                      momid=ifelse(mother>0, paste(ped,mother,sep="-"), as.character(mother)),
+	                      sex=sex, chrtype="X")))
+	  } else {
+	     #relation has already been formatted above, along with the new ped
+	  	 kinmatX <- Matrix(kinship(ped2, chrtype="X"))		
+	  }
     kinmatX <- kinmatX[keepped, keepped]
   } else {
     kinmatX <- NULL
