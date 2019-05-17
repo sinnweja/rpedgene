@@ -4,8 +4,8 @@
 ## variants over multiple genes
 ## Authors: Jason Sinnwell, Dan Schaid, and Alessia Visconti
 
-pedgene <- function(ped, geno, relation=NULL, map=NULL, male.dose=2, checkpeds=TRUE, verbose.return=FALSE,
-                    weights=NULL, weights.beta=c(1,25), weights.mb=FALSE,
+pedgene <- function(ped, geno,  map=NULL, male.dose=2, checkpeds=TRUE, verbose.return=FALSE,
+                    weights=NULL, weights.beta=c(1,25), weights.mb=FALSE, relation=NULL,
                     method="kounen", acc.davies=1e-5) {
 
 ##Arguments:

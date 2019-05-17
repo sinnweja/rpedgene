@@ -22,7 +22,7 @@ format.relation <- function(relation)
 
 {
 	relation <- as.data.frame(relation)
-	colnames(relation) <- c("ped", "id1", "id2", "code")
+	names(relation) <- c("ped", "id1", "id2", "code")
 	relation$id1 <- paste(relation$ped, relation$id1, sep="-")
 	relation$id2 <- paste(relation$ped, relation$id2, sep="-")
 	relation$ped <- NULL

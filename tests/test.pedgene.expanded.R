@@ -14,7 +14,7 @@ if(devel) {
   data(example.ped)
   data(example.geno)
   data(example.map)
-  
+  data(example.relation)
 }
 
 #require(survery)
@@ -53,6 +53,18 @@ print.pedgene(pg.out.m2,digits=3)
 ##    gene chrom stat.kernel pval.kernel stat.burden pval.burden
 ## AA   AA     1        80.1       0.404        4.90     0.02692
 ## AX   AX     X       198.2       0.186        7.82     0.00515
+
+## with twins
+example.ped[10,"sex"] <- 2
+#example.relation[2,4] <- 1
+#colnames(example.relation) <- c("ped","id1","id2", "code")
+#data(example.relation)
+#example.relation
+pg.out.m2.twins <- pedgene(ped=example.ped, geno=example.geno, relation=example.relation,
+           map=example.map, male.dose=2,  weights.mb=TRUE, checkpeds=TRUE)
+
+# summary/print and plot methods for this object
+print.pedgene(pg.out.m2.twins,digits=3)
 
 ## base case, beta weights, no pedcheck
 pg.beta.m2 <- pedgene(ped=example.ped, geno=example.geno, map=example.map, male.dose=2, verbose.return=TRUE)
