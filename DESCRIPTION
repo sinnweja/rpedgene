@@ -1,7 +1,7 @@
 Package: pedgene
 Type: Package
 Title: Gene-Level Statistics for Pedigree Data
-Version: 3.0
+Version: 3.1
 Date: 2019-5-17
 Authors@R: c(person("Schaid", "Daniel", role="aut"), person("Visconti", "Alessia", role="ctb"),
              person("Jason", "Sinnwell", email="sinnwell.jason@mayo.edu",role=c("aut","cre")))
