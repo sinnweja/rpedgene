@@ -45,7 +45,7 @@ library(pedgene)
 @
 
 <<echo=FALSE, eval=TRUE>>=
-.libPaths(new = c("/projects/bsi/gentools/R/lib301", .libPaths()))
+.libPaths(new = c("~/Rlib362", .libPaths()))
 library(pedgene)
 @
 
@@ -63,7 +63,6 @@ Three example data frames are provided within the pedgene package:
 \noindent Load the example data and look at some of the values.
 
 <<exdata>>=
-
 data(example.ped)
 example.ped[c(1:10,31:39),]
 data(example.geno)
@@ -139,7 +138,7 @@ have genotype data.
 
 <<continuous>>=
 set.seed(10)
-cont.ped <- example.ped[,c("ped", "person", "father", "mother", "sex")]
+cont.ped <- example.ped[,c("famid", "person", "father", "mother", "sex")]
 beta.sex <- 0.3
 cont.ped$trait <- (cont.ped$sex-1)*beta.sex + rnorm(nrow(cont.ped))
 
