@@ -39,18 +39,11 @@ names(pg.m2)
 
 
 print(pg.m2, digits=4)
-#  gene chrom stat.kernel pval.kernel stat.burden pval.burden
-#1   AA     1        80.1      0.4039       4.896    0.026925
-#2   AX     X       198.2      0.1856       7.825    0.005154
 
 
 print(pg.m1, digits=4)
-#  gene chrom stat.kernel pval.kernel stat.burden pval.burden
-#1   AA     1       80.10      0.4039       4.896     0.02692
-#2   AX     X       49.14      0.3568       5.291     0.02144
 
 summary(pg.m2)
-
 
 ## Testing first gene with dose=2-dose
 geno.recode <- cbind(example.geno[,1:2], 2-example.geno[,grep("AA", names(example.geno))])
@@ -58,5 +51,3 @@ pg.recode <- pedgene(example.ped, geno.recode, male.dose=2)
 
 ## note when map not given, assumes all 1 gene, and assigns "unknown" gene/chrom
 pg.recode
-#     gene   chrom stat.kernel pval.kernel stat.burden pval.burden
-# 1 unknown unknown      80.102      0.4039      4.8956    0.026925
