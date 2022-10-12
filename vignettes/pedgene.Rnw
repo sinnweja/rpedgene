@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{pedgene manual}
+%\VignetteIndexEntry{pedgene_manual}
 %\VignetteDepends{pedgene}
 %\VignetteKeywords{pedigree, variant, kinship}
 %\VignettePackage{pedgene}
@@ -40,14 +40,10 @@ in Schaid et al., 2013~\cite{Schaid}, entitled {\sl ``Multiple Genetic Variant A
 We begin by showing the data structure and requirements of the input data, and continue with 
 examples on running the method.  If the pedgene package is not loaded, load it now.
 
-<<echo=TRUE, eval=FALSE>>=
+<<echo=TRUE, eval=TRUE>>=
 library(pedgene)
 @
 
-<<echo=FALSE, eval=TRUE>>=
-.libPaths(new = c("~/Rlib362", .libPaths()))
-library(pedgene)
-@
 
 \section{Example Data}
 Three example data frames are provided within the pedgene package: 
