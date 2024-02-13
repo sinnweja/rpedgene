@@ -1,6 +1,6 @@
 
-R version 4.1.2 (2021-11-01) -- "Bird Hippie"
-Copyright (C) 2021 The R Foundation for Statistical Computing
+R Under development (unstable) (2022-09-11 r82834) -- "Unsuffered Consequences"
+Copyright (C) 2022 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -16,8 +16,6 @@ Type 'contributors()' for more information and
 Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
-
-[Previously saved workspace restored]
 
 > 
 > ## Expanded test script for pedgene package
@@ -397,4 +395,4 @@ gene: ' novar ' has no markers after removing markers with all same genotype
 > 
 > proc.time()
    user  system elapsed 
-  2.198   0.216   3.174 
+  4.191   0.229   5.640 
